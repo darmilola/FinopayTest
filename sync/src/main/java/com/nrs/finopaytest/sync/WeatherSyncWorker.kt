@@ -43,7 +43,7 @@ class WeatherSyncWorker @AssistedInject constructor(
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
 
-            val repeatingRequest = PeriodicWorkRequestBuilder<WeatherSyncWorker>(1, TimeUnit.HOURS)
+            val repeatingRequest = PeriodicWorkRequestBuilder<WeatherSyncWorker>(15, TimeUnit.MINUTES)
                 .setConstraints(constraints)
                 .build()
 
