@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
 import com.nrs.finopaytest.navigation.WeatherNavGraph
+import com.nrs.finopaytest.ui.theme.FinopayTestTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,7 +32,7 @@ class MainActivity : ComponentActivity() {
         askNotificationPermission()
 
         setContent {
-            MaterialTheme {
+            FinopayTestTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
                     WeatherNavGraph(navController = navController)

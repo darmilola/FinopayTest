@@ -15,7 +15,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -23,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrs.finopaytest.domain.model.Weather
+import com.nrs.finopaytest.ui.theme.FinopayTestTheme
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -57,7 +57,7 @@ fun CityManagementScreen(
                 title = {
                     Text(
                         "City Weather Management",
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.titleLarge
                     )
                 }
             )
@@ -74,14 +74,15 @@ fun CityManagementScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("Search city...") },
+                placeholder = { Text("Search city...", style = MaterialTheme.typography.bodyLarge) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 singleLine = true,
                 shape = CircleShape,
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedContainerColor = Color.LightGray.copy(alpha = 0.1f),
                     focusedContainerColor = Color.LightGray.copy(alpha = 0.1f)
-                )
+                ),
+                textStyle = MaterialTheme.typography.bodyLarge
             )
 
             if (isLoading && cities.isEmpty()) {
@@ -90,7 +91,11 @@ fun CityManagementScreen(
                 }
             } else if (error != null && cities.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = error, color = MaterialTheme.colorScheme.error)
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             } else {
                 LazyVerticalGrid(
@@ -126,22 +131,24 @@ fun AddCityDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add New City") },
+        title = { Text("Add New City", style = MaterialTheme.typography.headlineSmall) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = cityName,
                     onValueChange = { cityName = it },
-                    label = { Text("City Name") },
+                    label = { Text("City Name", style = MaterialTheme.typography.labelMedium) },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.bodyLarge
                 )
                 OutlinedTextField(
                     value = countryCode,
                     onValueChange = { countryCode = it },
-                    label = { Text("Country Code (e.g. NG, GB)") },
+                    label = { Text("Country Code (e.g. NG, GB)", style = MaterialTheme.typography.labelMedium) },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.bodyLarge
                 )
             }
         },
@@ -150,12 +157,12 @@ fun AddCityDialog(
                 onClick = { onConfirm(cityName, countryCode) },
                 enabled = cityName.isNotBlank() && countryCode.isNotBlank()
             ) {
-                Text("Add")
+                Text("Add", style = MaterialTheme.typography.labelLarge)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text("Cancel", style = MaterialTheme.typography.labelLarge)
             }
         }
     )
@@ -235,22 +242,19 @@ fun CityCard(
                     text = "${weather.temperature.toInt()}°C",
                     style = MaterialTheme.typography.displayMedium.copy(
                         color = Color.White,
-                        fontWeight = FontWeight.Light,
                         fontSize = 32.sp
                     )
                 )
                 Text(
                     text = weather.cityName,
                     style = MaterialTheme.typography.titleMedium.copy(
-                        color = Color.White.copy(alpha = 0.9f),
-                        fontWeight = FontWeight.Bold
+                        color = Color.White.copy(alpha = 0.9f)
                     )
                 )
                 Text(
                     text = dateString,
                     style = MaterialTheme.typography.labelSmall.copy(
-                        color = Color.White.copy(alpha = 0.7f),
-                        fontSize = 10.sp
+                        color = Color.White.copy(alpha = 0.7f)
                     )
                 )
             }
@@ -292,19 +296,21 @@ fun AddCityCard(onClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun CityManagementScreenPreview() {
-    val dummyCities = listOf(
-        Weather("London", 15.0, "Cloudy", 80, 10.0, isFavorite = true),
-        Weather("New York", 22.0, "Sunny", 60, 5.0, isFavorite = false),
-        Weather("Tokyo", 18.0, "Rainy", 90, 15.0, isFavorite = true),
-        Weather("Paris", 12.0, "Snowy", 70, 8.0, isFavorite = false)
-    )
-    CityManagementScreen(
-        cities = dummyCities,
-        searchQuery = "",
-        onSearchQueryChange = {},
-        onBackClick = {},
-        onAddCity = { _, _ -> },
-        onCityClick = {},
-        onFavoriteClick = {}
-    )
+    FinopayTestTheme {
+        val dummyCities = listOf(
+            Weather("London", 15.0, "Cloudy", 80, 10.0, isFavorite = true),
+            Weather("New York", 22.0, "Sunny", 60, 5.0, isFavorite = false),
+            Weather("Tokyo", 18.0, "Rainy", 90, 15.0, isFavorite = true),
+            Weather("Paris", 12.0, "Snowy", 70, 8.0, isFavorite = false)
+        )
+        CityManagementScreen(
+            cities = dummyCities,
+            searchQuery = "",
+            onSearchQueryChange = {},
+            onBackClick = {},
+            onAddCity = { _, _ -> },
+            onCityClick = {},
+            onFavoriteClick = {}
+        )
+    }
 }

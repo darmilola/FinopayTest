@@ -22,9 +22,8 @@ dependencyResolutionManagement {
 rootProject.name = "FinopayTest"
 include(":app")
 include(":core")
+include(":core:sync")
+include(":core:notifications")
 include(":domain")
 include(":data")
 include(":ui")
-include(":sync")
-include(":notifications")
-include(":navigation")

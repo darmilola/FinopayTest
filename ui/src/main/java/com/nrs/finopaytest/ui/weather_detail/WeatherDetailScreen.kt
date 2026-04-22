@@ -3,7 +3,6 @@ package com.nrs.finopaytest.ui.weather_detail
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -15,7 +14,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -25,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.nrs.finopaytest.domain.model.Weather
+import com.nrs.finopaytest.domain.model.WeatherDetailState
+import com.nrs.finopaytest.ui.theme.FinopayTestTheme
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -62,8 +62,7 @@ fun WeatherDetailContent(
                         Text(
                             text = state.weather?.cityName ?: "",
                             style = MaterialTheme.typography.titleLarge.copy(
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold
+                                color = Color.White
                             )
                         )
                     }
@@ -99,13 +98,15 @@ fun WeatherDetailContent(
                 .background(backgroundBrush)
                 .padding(paddingValues)
         ) {
+            val error = state.error
             if (state.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.White)
-            } else if (state.error != null) {
+            } else if (error != null) {
                 Text(
-                    text = state.error,
+                    text = error,
                     color = Color.White,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
+                    style = MaterialTheme.typography.bodyLarge
                 )
             } else {
                 state.weather?.let { weather ->
@@ -127,8 +128,7 @@ fun WeatherDetailContent(
                         Text(
                             text = weather.condition,
                             style = MaterialTheme.typography.headlineMedium.copy(
-                                color = Color.White,
-                                fontWeight = FontWeight.Medium
+                                color = Color.White
                             )
                         )
                         
@@ -142,8 +142,7 @@ fun WeatherDetailContent(
                                 text = "${weather.temperature.toInt()}°C",
                                 style = MaterialTheme.typography.displayLarge.copy(
                                     color = Color.White,
-                                    fontSize = 80.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontSize = 80.sp
                                 )
                             )
                             Spacer(modifier = Modifier.width(16.dp))
@@ -232,22 +231,24 @@ private fun getWeatherIcon(condition: String): ImageVector {
 @Preview
 @Composable
 fun WeatherDetailPreview() {
-    WeatherDetailContent(
-        state = WeatherDetailState(
-            weather = Weather(
-                cityName = "Calabar",
-                temperature = 12.0,
-                condition = "Cloudy",
-                humidity = 80,
-                windSpeed = 10.0,
-                feelsLike = 10.0,
-                tempMin = 8.0,
-                tempMax = 15.0,
-                description = "broken clouds",
-                sunrise = 1661835000L,
-                sunset = 1661880000L
-            )
-        ),
-        onBackClick = {}
-    )
+    FinopayTestTheme {
+        WeatherDetailContent(
+            state = WeatherDetailState(
+                weather = Weather(
+                    cityName = "Calabar",
+                    temperature = 12.0,
+                    condition = "Cloudy",
+                    humidity = 80,
+                    windSpeed = 10.0,
+                    feelsLike = 10.0,
+                    tempMin = 8.0,
+                    tempMax = 15.0,
+                    description = "broken clouds",
+                    sunrise = 1661835000L,
+                    sunset = 1661880000L
+                )
+            ),
+            onBackClick = {}
+        )
+    }
 }
