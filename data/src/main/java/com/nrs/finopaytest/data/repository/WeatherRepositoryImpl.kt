@@ -87,4 +87,8 @@ class WeatherRepositoryImpl @Inject constructor(
             // Handle error
         }
     }
+
+    override suspend fun getAnyFavoriteCity(): Weather? {
+        return dao.getAnyFavoriteCity()?.toWeather()
+    }
 }

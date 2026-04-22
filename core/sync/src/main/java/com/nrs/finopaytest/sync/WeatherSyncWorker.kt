@@ -3,8 +3,6 @@ package com.nrs.finopaytest.sync
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.*
-import com.nrs.finopaytest.data.local.WeatherDao
-import com.nrs.finopaytest.data.mapper.toWeather
 import com.nrs.finopaytest.domain.repository.WeatherRepository
 import com.nrs.finopaytest.notifications.WeatherNotificationManager
 import dagger.assisted.Assisted
@@ -16,7 +14,6 @@ class WeatherSyncWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val repository: WeatherRepository,
-    private val dao: WeatherDao,
     private val notificationManager: WeatherNotificationManager
 ) : CoroutineWorker(context, workerParams) {
 
@@ -25,8 +22,8 @@ class WeatherSyncWorker @AssistedInject constructor(
             repository.refreshWeather()
             
             // Get a favorite city to notify about
-            dao.getAnyFavoriteCity()?.let { favorite ->
-                notificationManager.showWeatherNotification(favorite.toWeather())
+            repository.getAnyFavoriteCity()?.let { favorite ->
+                notificationManager.showWeatherNotification(favorite)
             }
             
             Result.success()

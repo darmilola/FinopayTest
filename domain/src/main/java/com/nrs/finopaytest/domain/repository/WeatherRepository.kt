@@ -10,4 +10,5 @@ interface WeatherRepository {
     suspend fun toggleFavorite(cityName: String)
     suspend fun refreshWeather()
     suspend fun addCity(cityName: String, countryCode: String)
+    suspend fun getAnyFavoriteCity(): Weather?
 }
