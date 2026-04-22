@@ -9,4 +9,5 @@ interface WeatherRepository {
     fun getWeatherDetail(cityName: String): Flow<Resource<Weather>>
     suspend fun toggleFavorite(cityName: String)
     suspend fun refreshWeather()
+    suspend fun addCity(cityName: String, countryCode: String)
 }

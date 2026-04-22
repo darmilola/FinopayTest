@@ -1,8 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+}
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
 }
 
 android {
@@ -11,6 +19,14 @@ android {
 
     defaultConfig {
         minSdk = 24
+        
+        // Use the key from local.properties if available, otherwise use the provided default
+        val apiKey = localProperties.getProperty("ApiKey") ?: "d71a75db79c3bf5ec6002cb42c2c95ce"
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     compileOptions {

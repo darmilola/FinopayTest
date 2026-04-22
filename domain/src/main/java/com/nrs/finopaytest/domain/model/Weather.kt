@@ -6,5 +6,12 @@ data class Weather(
     val condition: String,
     val humidity: Int,
     val windSpeed: Double,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val lastUpdated: Long = System.currentTimeMillis(),
+    val feelsLike: Double = 0.0,
+    val tempMin: Double = 0.0,
+    val tempMax: Double = 0.0,
+    val description: String = "",
+    val sunrise: Long = 0L,
+    val sunset: Long = 0L
 )

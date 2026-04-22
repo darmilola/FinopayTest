@@ -1,10 +1,12 @@
 package com.nrs.finopaytest.data.repository
 
 import com.nrs.finopaytest.core.Resource
+import com.nrs.finopaytest.data.BuildConfig
 import com.nrs.finopaytest.data.local.WeatherDao
 import com.nrs.finopaytest.data.mapper.toWeather
 import com.nrs.finopaytest.data.mapper.toWeatherEntity
 import com.nrs.finopaytest.data.remote.WeatherApiService
+import com.nrs.finopaytest.domain.model.City
 import com.nrs.finopaytest.domain.model.Weather
 import com.nrs.finopaytest.domain.repository.WeatherRepository
 import kotlinx.coroutines.flow.*
@@ -17,13 +19,14 @@ class WeatherRepositoryImpl @Inject constructor(
     private val dao: WeatherDao
 ) : WeatherRepository {
 
-    private val apiKey = "YOUR_API_KEY" // In a real app, this would be in local.properties or a secrets manager
-    private val defaultCities = listOf("London", "New York", "Tokyo", "Paris", "Berlin", "Lagos", "Dubai", "Sydney")
+    private val apiKey = BuildConfig.API_KEY
 
     override fun getWeatherList(): Flow<Resource<List<Weather>>> = flow {
         emit(Resource.Loading())
         
-        val localWeather = dao.getWeatherList().first().map { it.toWeather() }
+        val localEntities = dao.getWeatherList().first()
+        val localWeather = localEntities.map { it.toWeather() }
+        
         if (localWeather.isNotEmpty()) {
             emit(Resource.Success(localWeather))
         }
@@ -33,19 +36,21 @@ class WeatherRepositoryImpl @Inject constructor(
             val updatedWeather = dao.getWeatherList().first().map { it.toWeather() }
             emit(Resource.Success(updatedWeather))
         } catch (e: Exception) {
-            emit(Resource.Error("Couldn't reach server. Check your internet connection.", localWeather))
+            if (localWeather.isEmpty()) {
+                emit(Resource.Error("Couldn't reach server. Check your internet connection."))
+            } else {
+                emit(Resource.Success(localWeather))
+            }
         }
     }
 
     override fun getWeatherDetail(cityName: String): Flow<Resource<Weather>> = flow {
         emit(Resource.Loading())
-        
-        dao.getWeatherDetail(cityName).collect { entity ->
-            if (entity != null) {
-                emit(Resource.Success(entity.toWeather()))
-            } else {
-                emit(Resource.Error("City not found"))
-            }
+        val entity = dao.getWeatherDetail(cityName).first()
+        if (entity != null) {
+            emit(Resource.Success(entity.toWeather()))
+        } else {
+            emit(Resource.Error("City not found"))
         }
     }
 
@@ -54,13 +59,12 @@ class WeatherRepositoryImpl @Inject constructor(
     }
 
     override suspend fun refreshWeather() {
-        // In a production app, we'd fetch for all cities or just visible ones
-        val entities = defaultCities.map { city ->
-            val response = api.getWeather(city, apiKey)
+        val entities = City.entries.map { city ->
+            val query = "${city.cityName},${city.countryCode}"
+            val response = api.getWeather(query, apiKey)
             response.toWeatherEntity()
         }
         
-        // Preserve favorite status during refresh
         val favorites = dao.getFavoriteCityNames()
         val finalEntities = entities.map { entity ->
             if (favorites.contains(entity.cityName)) {
@@ -71,5 +75,16 @@ class WeatherRepositoryImpl @Inject constructor(
         }
         
         dao.insertWeatherList(finalEntities)
+    }
+
+    override suspend fun addCity(cityName: String, countryCode: String) {
+        try {
+            val query = "$cityName,$countryCode"
+            val response = api.getWeather(query, apiKey)
+            val entity = response.toWeatherEntity()
+            dao.insertWeatherList(listOf(entity))
+        } catch (e: Exception) {
+            // Handle error
+        }
     }
 }

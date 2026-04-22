@@ -10,7 +10,13 @@ fun WeatherResponse.toWeatherEntity(): WeatherEntity {
         temperature = main.temp,
         condition = weather.firstOrNull()?.main ?: "Unknown",
         humidity = main.humidity,
-        windSpeed = wind.speed
+        windSpeed = wind.speed,
+        feelsLike = main.feelsLike,
+        tempMin = main.tempMin,
+        tempMax = main.tempMax,
+        description = weather.firstOrNull()?.description ?: "",
+        sunrise = sys.sunrise,
+        sunset = sys.sunset
     )
 }
 
@@ -21,6 +27,13 @@ fun WeatherEntity.toWeather(): Weather {
         condition = condition,
         humidity = humidity,
         windSpeed = windSpeed,
-        isFavorite = isFavorite
+        isFavorite = isFavorite,
+        lastUpdated = lastUpdated,
+        feelsLike = feelsLike,
+        tempMin = tempMin,
+        tempMax = tempMax,
+        description = description,
+        sunrise = sunrise,
+        sunset = sunset
     )
 }
