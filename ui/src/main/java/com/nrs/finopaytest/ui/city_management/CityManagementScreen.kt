@@ -56,7 +56,7 @@ fun CityManagementScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "City Management",
+                        "City Weather Management",
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                     )
                 }
